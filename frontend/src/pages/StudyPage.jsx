@@ -72,11 +72,11 @@ export default function StudyPage() {
           </div>
         ) : null}
 
-        <div className="mb-12 rounded-3xl border-2 border-slate-100 bg-white p-6 shadow-sm">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="mb-8 sm:mb-12 rounded-2xl sm:rounded-3xl border-2 border-slate-100 bg-white p-4 sm:p-6 shadow-sm">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
             <div className="flex-1">
-              <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-4">Select Levels</h3>
-              <div className="flex flex-wrap gap-2">
+              <h3 className="text-[10px] sm:text-sm font-black text-slate-900 uppercase tracking-widest mb-3 sm:mb-4">Select Levels</h3>
+              <div className="flex flex-wrap gap-1.5 sm:gap-2">
                 {LEVELS.map((level) => {
                   const active = selectedLevels.includes(level);
                   return (
@@ -84,7 +84,7 @@ export default function StudyPage() {
                       key={level}
                       type="button"
                       onClick={() => toggleLevel(level)}
-                      className={`relative overflow-hidden rounded-xl px-5 py-2.5 text-xs font-black transition-all duration-300 border-2 ${
+                      className={`relative overflow-hidden rounded-xl px-4 py-2 sm:px-5 sm:py-2.5 text-[10px] sm:text-xs font-black transition-all duration-300 border-2 ${
                         active
                           ? "bg-brand-500 text-white border-brand-500 shadow-lg shadow-brand-500/20"
                           : "bg-white border-slate-100 text-slate-400 hover:border-slate-300"
@@ -101,7 +101,7 @@ export default function StudyPage() {
               type="button"
               onClick={loadDeck}
               disabled={!canLoad || loading}
-              className={`min-w-[180px] rounded-2xl px-6 py-4 text-sm font-black text-white transition-all duration-300 shadow-xl active:scale-95 disabled:opacity-50 disabled:scale-100 ${
+              className={`md:min-w-[180px] rounded-xl sm:rounded-2xl px-5 py-2.5 sm:px-6 sm:py-4 text-[10px] sm:text-sm font-black text-white transition-all duration-300 shadow-xl active:scale-95 disabled:opacity-50 disabled:scale-100 ${
                 isSessionStarted 
                   ? "bg-slate-800 hover:bg-slate-900 shadow-slate-200" 
                   : "bg-brand-500 hover:bg-brand-600 shadow-brand-500/20"

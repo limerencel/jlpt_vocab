@@ -65,33 +65,35 @@ export default function FlashCard({ word }) {
   };
 
   return (
-    <div className="w-full max-w-xl mx-auto perspective-1000 group">
+    <div className="w-full max-w-xl mx-auto perspective-1000 group select-none touch-manipulation">
       {hasAudio && (
         <audio ref={audioRef} src={audioUrl} preload="auto" />
       )}
       
       <div
-        className={`relative w-full min-h-[22rem] cursor-pointer transition-all duration-700 preserve-3d shadow-2xl rounded-3xl ${
+        className={`relative w-full min-h-[20rem] sm:min-h-[22rem] cursor-pointer transition-all duration-700 preserve-3d shadow-2xl rounded-3xl ${
           flipped ? "[transform:rotateY(180deg)]" : ""
         }`}
         onClick={() => setFlipped((v) => !v)}
       >
         {/* Front Side */}
-        <div className="absolute inset-0 h-full w-full rounded-3xl border-2 border-slate-100 bg-white backface-hidden flex flex-col items-center justify-center p-10 transition-all duration-300 group-hover:border-brand-500/30">
-          <div className="absolute top-8 left-8">
-            <span className="inline-flex items-center rounded-full bg-slate-100 px-4 py-1.5 text-xs font-bold text-slate-500 uppercase tracking-widest shadow-sm">
+        <div className="absolute inset-0 h-full w-full rounded-3xl border-2 border-slate-100 bg-white backface-hidden flex flex-col items-center justify-center p-6 sm:p-10 transition-all duration-300 group-hover:border-brand-500/30">
+          <div className="absolute top-6 left-6 sm:top-8 sm:left-8">
+            <span className="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 sm:px-4 sm:py-1.5 text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-widest shadow-sm">
               {word.level}
             </span>
           </div>
           
-          <div className="text-center animate-float">
-            <h2 className="text-7xl font-bold text-slate-900 tracking-tighter sm:text-8xl">
+          <div className="text-center animate-float px-2">
+            <h2 className={`font-bold text-slate-900 tracking-tighter transition-all duration-300 ${
+              word.word.length > 4 ? "text-5xl sm:text-7xl" : "text-7xl sm:text-8xl"
+            }`}>
               {word.word}
             </h2>
-            <div className="mt-8 flex flex-col items-center gap-2">
+            <div className="mt-6 sm:mt-8 flex flex-col items-center gap-2">
               <span className="h-1.5 w-12 bg-brand-500 rounded-full opacity-20"></span>
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em]">
-                Click to reveal
+                Tap to reveal
               </p>
             </div>
           </div>
@@ -99,14 +101,16 @@ export default function FlashCard({ word }) {
 
         {/* Back Side */}
         <div 
-          className="absolute inset-0 h-full w-full rounded-3xl border-2 border-brand-500/20 bg-white backface-hidden flex flex-col p-8 transition-all duration-300 [transform:rotateY(180deg)] overflow-y-auto"
+          className="absolute inset-0 h-full w-full rounded-3xl border-2 border-brand-500/20 bg-white backface-hidden flex flex-col p-6 sm:p-8 transition-all duration-300 [transform:rotateY(180deg)] overflow-y-auto"
         >
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-slate-100 pb-5 mb-6">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-4 sm:pb-5 mb-4 sm:mb-6">
             <div className="flex-1">
-              <p className="text-[10px] uppercase font-bold tracking-[0.2em] text-slate-400 mb-2">Reading</p>
+              <p className="text-[10px] uppercase font-bold tracking-[0.2em] text-slate-400 mb-1 sm:mb-2">Reading</p>
               <div className="flex items-baseline gap-3">
-                <h3 className="text-4xl font-bold text-brand-600 tracking-tight">
+                <h3 className={`font-bold text-brand-600 tracking-tight transition-all duration-300 ${
+                  (word.reading || word.word).length > 6 ? "text-2xl sm:text-4xl" : "text-3xl sm:text-4xl"
+                }`}>
                   {word.reading || word.word}
                 </h3>
               </div>
