@@ -65,13 +65,13 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={loading}
-          className="mt-6 w-full rounded-lg bg-brand-500 px-4 py-2 text-white font-medium hover:bg-brand-700 disabled:opacity-70"
+          className="mt-6 w-full rounded-lg bg-brand-500 px-4 py-2 text-white font-medium hover:bg-brand-700 transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-70 transform active:scale-[0.98]"
         >
           {loading ? "Signing in..." : "Sign in"}
         </button>
 
         <p className="mt-4 text-sm text-slate-600">
-          No account? <Link to="/register" className="text-brand-700 underline">Create one</Link>
+          No account? <Link to="/register" className="text-brand-700 hover:text-brand-500 underline transition-colors">Create one</Link>
         </p>
       </form>
     </main>

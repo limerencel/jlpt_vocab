@@ -39,3 +39,10 @@ npm run dev
 
 - `record_answer(p_word_id integer, p_is_correct boolean)`
 - `get_progress_stats()`
+
+## Card enrichment flow
+
+- On card flip, frontend calls edge function `get-word-enrichment` with `wordId`.
+- Edge function checks `public.word_enrichment` cache first.
+- Cache miss: fetches example sentence from Tatoeba API and builds pronunciation URL, then stores in cache.
+- UI then shows the example and enables pronunciation playback.

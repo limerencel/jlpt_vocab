@@ -25,6 +25,10 @@ export default function StudyPage() {
   const [correct, setCorrect] = useState(0);
   const [wrong, setWrong] = useState(0);
 
+  const [enrichmentByWordId, setEnrichmentByWordId] = useState({});
+  const [enrichmentLoadingByWordId, setEnrichmentLoadingByWordId] = useState({});
+  const [enrichmentErrorByWordId, setEnrichmentErrorByWordId] = useState({});
+
   const current = words[index] ?? null;
   const done = words.length > 0 && index >= words.length;
 
@@ -37,6 +41,9 @@ export default function StudyPage() {
     setCorrect(0);
     setWrong(0);
     setIndex(0);
+    setEnrichmentByWordId({});
+    setEnrichmentLoadingByWordId({});
+    setEnrichmentErrorByWordId({});
 
     const { data, error: fetchError } = await supabase
       .from("words")
@@ -58,6 +65,52 @@ export default function StudyPage() {
     loadDeck();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  async function ensureEnrichment(wordId) {
+    if (!wordId) return;
+    if (enrichmentByWordId[wordId] || enrichmentLoadingByWordId[wordId]) return;
+
+    setEnrichmentLoadingByWordId((prev) => ({ ...prev, [wordId]: true }));
+    setEnrichmentErrorByWordId((prev) => ({ ...prev, [wordId]: "" }));
+
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session?.access_token) {
+      setEnrichmentErrorByWordId((prev) => ({
+        ...prev,
+        [wordId]: "Session expired. Please login again.",
+      }));
+      setEnrichmentLoadingByWordId((prev) => ({ ...prev, [wordId]: false }));
+      return;
+    }
+
+    const fnUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-word-enrichment-v2`;
+    const response = await fetch(fnUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({ wordId }),
+    });
+
+    const data = await response.json().catch(() => null);
+
+    if (!response.ok) {
+      setEnrichmentErrorByWordId((prev) => ({
+        ...prev,
+        [wordId]: data?.message || data?.error || "Failed to load enrichment",
+      }));
+      setEnrichmentLoadingByWordId((prev) => ({ ...prev, [wordId]: false }));
+      return;
+    }
+
+    setEnrichmentByWordId((prev) => ({ ...prev, [wordId]: data }));
+    setEnrichmentLoadingByWordId((prev) => ({ ...prev, [wordId]: false }));
+  }
 
   async function answer(isCorrect) {
     if (!current) return;
@@ -90,7 +143,7 @@ export default function StudyPage() {
         <header className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h1 className="text-2xl font-bold text-slate-900">Study</h1>
-            <p className="text-sm text-slate-600">Flashcards with instant progress sync</p>
+            <p className="text-sm text-slate-600">Flip card to load pronunciation + example</p>
           </div>
           <div className="flex items-center gap-2">
             <Link to="/stats" className="text-sm rounded-lg border border-slate-300 px-3 py-2 bg-white">
@@ -151,7 +204,13 @@ export default function StudyPage() {
               <p className="mb-4 text-sm text-slate-600">
                 Card {index + 1} / {words.length}
               </p>
-              <FlashCard word={current} />
+              <FlashCard
+                word={current}
+                enrichment={enrichmentByWordId[current.id]}
+                enrichmentLoading={Boolean(enrichmentLoadingByWordId[current.id])}
+                enrichmentError={enrichmentErrorByWordId[current.id] || ""}
+                onFlipOpen={() => ensureEnrichment(current.id)}
+              />
               <div className="mt-5 flex justify-center gap-3">
                 <button
                   type="button"

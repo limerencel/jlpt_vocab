@@ -39,7 +39,10 @@ export default function StatsPage() {
             <h1 className="text-2xl font-bold text-slate-900">Progress Stats</h1>
             <p className="text-sm text-slate-600">Your learning status by JLPT level</p>
           </div>
-          <Link to="/study" className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm">
+          <Link 
+            to="/study" 
+            className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm hover:bg-slate-50 transition-colors duration-200"
+          >
             Back to Study
           </Link>
         </header>
