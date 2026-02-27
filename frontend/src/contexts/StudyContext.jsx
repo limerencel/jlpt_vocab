@@ -30,7 +30,7 @@ async function fetchWordsByIds(ids) {
 
   const { data, error } = await supabase
     .from("words")
-    .select("id, word, reading, meaning, level")
+    .select("id, word, reading, meaning, level, pos")
     .in("id", ids);
 
   if (error) throw error;
@@ -85,7 +85,7 @@ export function StudyProvider({ children }) {
 
     const { data, error: fetchError } = await supabase
       .from("words")
-      .select("id, word, reading, meaning, level")
+      .select("id, word, reading, meaning, level, pos")
       .in("level", selectedLevels)
       .limit(SESSION_SIZE);
 
@@ -206,7 +206,7 @@ export function StudyProvider({ children }) {
 
       const { data: freshData, error: freshError } = await supabase
         .from("words")
-        .select("id, word, reading, meaning, level")
+        .select("id, word, reading, meaning, level, pos")
         .in("level", savedLevels)
         .limit(SESSION_SIZE);
 

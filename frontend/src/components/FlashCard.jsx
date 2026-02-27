@@ -55,6 +55,7 @@ export default function FlashCard({ word }) {
   
   const hasExample = !!(exJa || exEn);
   const hasAudio = !!audioUrl;
+  const posLabel = word.pos?.trim();
 
   const playAudio = (e) => {
     e.stopPropagation();
@@ -83,6 +84,13 @@ export default function FlashCard({ word }) {
               {word.level}
             </span>
           </div>
+          {posLabel ? (
+            <div className="absolute top-6 right-6 sm:top-8 sm:right-8">
+              <span className="inline-flex items-center rounded-full bg-brand-50 px-3 py-1 sm:px-4 sm:py-1.5 text-[10px] sm:text-xs font-bold text-brand-600 uppercase tracking-widest shadow-sm">
+                {posLabel}
+              </span>
+            </div>
+          ) : null}
           
           <div className="text-center animate-float px-2">
             <h2 className={`font-bold text-slate-900 tracking-tighter transition-all duration-300 ${
