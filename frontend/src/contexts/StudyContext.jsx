@@ -42,7 +42,18 @@ export function StudyProvider({ children }) {
 
     const { data, error: fetchError } = await supabase
       .from("words")
-      .select("id, word, reading, meaning, level")
+      .select(`
+        id, 
+        word, 
+        reading, 
+        meaning, 
+        level,
+        word_enrichment (
+          example_ja,
+          example_en,
+          pronunciation_url
+        )
+      `)
       .in("level", selectedLevels)
       .limit(300);
 
