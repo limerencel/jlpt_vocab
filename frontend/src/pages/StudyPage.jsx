@@ -4,7 +4,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { useStudy } from "../contexts/StudyContext";
 
 export default function StudyPage() {
-  const { signOut } = useAuth();
+  const { user, signOut } = useAuth();
   const {
     selectedLevels,
     words,
@@ -47,15 +47,30 @@ export default function StudyPage() {
               </svg>
               Stats
             </Link>
-            <button
-              type="button"
-              onClick={() => signOut()}
-              className="px-4 py-2 text-sm font-bold text-slate-400 hover:text-red-500 transition-colors"
-            >
-              Sign out
-            </button>
+            {user ? (
+              <button
+                type="button"
+                onClick={() => signOut()}
+                className="px-4 py-2 text-sm font-bold text-slate-400 hover:text-red-500 transition-colors"
+              >
+                Sign out
+              </button>
+            ) : (
+              <Link
+                to="/login"
+                className="px-4 py-2 text-sm font-bold text-brand-600 hover:text-brand-700 transition-colors"
+              >
+                Login to save
+              </Link>
+            )}
           </div>
         </header>
+
+        {!user ? (
+          <div className="mb-6 rounded-xl border border-brand-100 bg-brand-50 px-4 py-3 text-sm text-brand-700">
+            Guest mode: you can study now, but progress is not saved until you log in.
+          </div>
+        ) : null}
 
         <div className="mb-12 rounded-3xl border-2 border-slate-100 bg-white p-6 shadow-sm">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">

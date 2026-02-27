@@ -6,26 +6,42 @@ export default function StatsPage() {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [resettingLevel, setResettingLevel] = useState("");
 
-  useEffect(() => {
-    let mounted = true;
+  async function loadStats() {
+    setLoading(true);
+    setError("");
+    const { data, error: rpcError } = await supabase.rpc("get_progress_stats");
+    setLoading(false);
+    if (rpcError) {
+      setError(rpcError.message);
+      return;
+    }
+    setRows(data ?? []);
+  }
 
-    async function loadStats() {
-      setLoading(true);
-      const { data, error: rpcError } = await supabase.rpc("get_progress_stats");
-      if (!mounted) return;
-      setLoading(false);
-      if (rpcError) {
-        setError(rpcError.message);
-        return;
-      }
-      setRows(data ?? []);
+  async function handleResetLevel(level) {
+    const confirmed = window.confirm(`Reset your ${level} progress? This cannot be undone.`);
+    if (!confirmed) return;
+
+    setResettingLevel(level);
+    setError("");
+    const { error: resetError } = await supabase.rpc("reset_progress_by_level", {
+      p_level: level,
+    });
+    setResettingLevel("");
+
+    if (resetError) {
+      setError(resetError.message);
+      return;
     }
 
+    await loadStats();
+  }
+
+  useEffect(() => {
     loadStats();
-    return () => {
-      mounted = false;
-    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const byLevel = useMemo(() => rows.filter((r) => r.level !== "ALL").sort((a, b) => b.level.localeCompare(a.level)), [rows]);
@@ -74,13 +90,18 @@ export default function StatsPage() {
               <StatCard label="Words Seen" value={overall.seen_words} color="blue" />
               <StatCard label="Mastered" value={overall.known_words} color="emerald" />
               <StatCard label="Learning" value={overall.learning_words} color="brand" />
-              <StatCard label="Mastery Rate" value={`${overall.known_rate}%`} color="orange" />
+              <StatCard label="Mastery Rate (All Words)" value={`${overall.known_rate}%`} color="orange" />
             </div>
 
             <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-6 px-2">Breakdown by Level</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {byLevel.map((row) => (
-                <LevelCard key={row.level} row={row} />
+                <LevelCard
+                  key={row.level}
+                  row={row}
+                  onReset={handleResetLevel}
+                  resetting={resettingLevel === row.level}
+                />
               ))}
             </div>
           </div>
@@ -109,7 +130,7 @@ function StatCard({ label, value, color }) {
   );
 }
 
-function LevelCard({ row }) {
+function LevelCard({ row, onReset, resetting }) {
   const rate = Number(row.known_rate);
   
   return (
@@ -126,7 +147,7 @@ function LevelCard({ row }) {
         </div>
         <div className="text-right">
           <p className="text-2xl font-black text-brand-600 tracking-tight">{rate}%</p>
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Mastered</p>
+          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">of all words</p>
         </div>
       </div>
 
@@ -151,6 +172,15 @@ function LevelCard({ row }) {
           <p className="text-sm font-black text-orange-700">{row.learning_words}</p>
         </div>
       </div>
+
+      <button
+        type="button"
+        disabled={resetting}
+        onClick={() => onReset(row.level)}
+        className="mt-5 w-full rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-xs font-black uppercase tracking-widest text-red-700 transition hover:bg-red-100 disabled:opacity-60"
+      >
+        {resetting ? "Resetting..." : `Reset ${row.level} Progress`}
+      </button>
     </div>
   );
 }

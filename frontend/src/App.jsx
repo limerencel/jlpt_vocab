@@ -15,11 +15,7 @@ export default function App() {
 
         <Route
           path="/study"
-          element={
-            <ProtectedRoute>
-              <StudyPage />
-            </ProtectedRoute>
-          }
+          element={<StudyPage />}
         />
         <Route
           path="/stats"
